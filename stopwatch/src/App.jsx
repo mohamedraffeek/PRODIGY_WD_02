@@ -12,7 +12,7 @@ function App() {
     const [showResetModal, setShowResetModal] = useState(false);
     const [isStarted, setIsStarted] = useState(false);
 
-    const [id, setId] = useState(0);
+    const [id, setId] = useState(1);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -25,20 +25,28 @@ function App() {
     }, [lapTimes]);
 
     useEffect(() => {
+        let startTime;
         let intervalId;
+    
+        const updateTimers = () => {
+            const currentTime = performance.now();
+            const elapsedTime = currentTime - startTime;
+    
+            setTime((prevTime) => prevTime + elapsedTime / 10);
+            setAltTime((prevAltTime) => prevAltTime + elapsedTime / 10);
+    
+            startTime = currentTime;
+        };
+    
         if (isRunning) {
-            intervalId = setInterval(() => setTime(time + 1), 10);
+            startTime = performance.now();
+            intervalId = setInterval(updateTimers, 10);
         }
-        return () => clearInterval(intervalId);
-    }, [isRunning, time]);
-
-    useEffect(() => {
-        let intervalId;
-        if (isRunning) {
-            intervalId = setInterval(() => setAltTime(altTime + 1), 10);
-        }
-        return () => clearInterval(intervalId);
-    }, [isRunning, altTime]);
+    
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, [isRunning]);
 
     const hours = Math.floor(time / 360000);
 
@@ -46,7 +54,7 @@ function App() {
 
     const seconds = Math.floor((time % 6000) / 100);
 
-    const milliseconds = time % 100;
+    const milliseconds = Math.floor(time % 100);
 
     const altHours = Math.floor(altTime / 360000);
 
@@ -54,13 +62,31 @@ function App() {
 
     const altSeconds = Math.floor((altTime % 6000) / 100);
 
-    const altMilliseconds = altTime % 100;
+    const altMilliseconds = Math.floor(altTime % 100);
 
     const startAndPause = () => {
-        setIsRunning(!isRunning);
         if(isRunning) {
+            setIsStarted(true);
+            setId(id + 1);
+            const capturedTime = {
+                id: id,
+                hours: hours,
+                minutes: minutes,
+                seconds: seconds,
+                milliseconds: milliseconds,
+            };
+            const capturedAltTime = {
+                id: id,
+                hours: altHours,
+                minutes: altMinutes,
+                seconds: altSeconds,
+                milliseconds: altMilliseconds,
+            };
+            setLapTimes((prevLapTimes) => [...prevLapTimes, [capturedTime, capturedAltTime]]);
+            setAltTime(0);
             setLapTimes((prevLapTimes) => [...prevLapTimes, [{id: -1}]]);
         }
+        setIsRunning(!isRunning);
     };
 
     const confirmReset = () => {
@@ -70,7 +96,7 @@ function App() {
     const reset = () => {
         setTime(0);
         setAltTime(0);
-        setId(0);
+        setId(1);
         setIsStarted(false);
         setLapTimes([]);
     };
@@ -123,34 +149,34 @@ function App() {
                         </button>
                     </div>
                 </div>
-                    <div className='stopwatch-laps' ref={lapListRef}>
-                        {lapTimes.map((lapTime) => (
-                            <>
-                            {lapTime[0].id !== -1 && 
-                                <p className={'lap-entry fade-in'} key={lapTime[0].id} style={{ display: 'flex', flexDirection: 'row', gap: '80px', justifyContent: 'center' }}>
-                                    <span style={{ color: 'purple', width: '40px' }}>
-                                        #{lapTime[0].id}
-                                    </span>
-                                    {`\t${lapTime[0].hours.toString().padStart(2, '0')}`}:
-                                    {`${lapTime[0].minutes.toString().padStart(2, '0')}`}:
-                                    {`${lapTime[0].seconds.toString().padStart(2, '0')}`}:
-                                    {`${lapTime[0].milliseconds.toString().padStart(2, '0')}`}
-                                    <span style={{ color: 'orange' }}>
-                                        {` ${lapTime[1].hours.toString().padStart(2, '0')}`}:
-                                        {`${lapTime[1].minutes.toString().padStart(2, '0')}`}:
-                                        {`${lapTime[1].seconds.toString().padStart(2, '0')}`}:
-                                        {`${lapTime[1].milliseconds.toString().padStart(2, '0')}`}
-                                    </span>
-                                </p>
-                            }
-                            {lapTime[0].id === -1 && 
-                                <p className="pause-entry fade-in" style={{ color: 'violet', display: 'flex', justifyContent: 'center' }}>
-                                    Pause
-                                </p>
-                            }
-                            </>
-                        ))}
-                    </div>
+                <div className='stopwatch-laps' ref={lapListRef}>
+                    {lapTimes.map((lapTime) => (
+                        <>
+                        {lapTime[0].id !== -1 && 
+                            <p className={'lap-entry fade-in'} key={lapTime[0].id}>
+                                <span style={{ color: 'purple', width: '40px' }}>
+                                    #{lapTime[0].id}
+                                </span>
+                                {`\t${lapTime[0].hours.toString().padStart(2, '0')}`}:
+                                {`${lapTime[0].minutes.toString().padStart(2, '0')}`}:
+                                {`${lapTime[0].seconds.toString().padStart(2, '0')}`}:
+                                {`${lapTime[0].milliseconds.toString().padStart(2, '0')}`}
+                                <span style={{ color: 'orange' }}>
+                                    {` ${lapTime[1].hours.toString().padStart(2, '0')}`}:
+                                    {`${lapTime[1].minutes.toString().padStart(2, '0')}`}:
+                                    {`${lapTime[1].seconds.toString().padStart(2, '0')}`}:
+                                    {`${lapTime[1].milliseconds.toString().padStart(2, '0')}`}
+                                </span>
+                            </p>
+                        }
+                        {lapTime[0].id === -1 && 
+                            <p className="pause-entry fade-in" style={{ color: 'purple', display: 'flex', justifyContent: 'center' }}>
+                                Pause
+                            </p>
+                        }
+                        </>
+                    ))}
+                </div>
             </div>
             <TwoButtonsModal
                 show={showResetModal}
