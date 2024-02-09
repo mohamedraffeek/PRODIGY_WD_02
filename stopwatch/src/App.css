@@ -1,0 +1,143 @@
+body {
+  overflow: hidden;
+}
+
+.container-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+  top: 10vw;
+  transition: transform 0.5s ease-in-out;
+}
+
+.container-wrapper.started {
+  transform: translateY(-20%);
+}
+
+.timers-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.stopwatch-time {
+  font-size: 120px;
+}
+
+.stopwatch-alt {
+  color: orange;
+  font-size: 45px;
+}
+
+.stopwatch-buttons {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.stopwatch-button {
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+  margin: 10px;
+  background-color: #4caf50;
+  transition: background-color 0.3s, transform 0.3s;
+  border: 2px solid silver;
+  font-size: larger;
+  color: white;
+}
+
+.stopwatch-button:hover {
+  background-color: #66bb6a;
+}
+
+.stopwatch-button:disabled {
+  cursor: not-allowed;
+  background-color: gray;
+}
+
+.stopwatch-button.pause {
+  background-color: #ff9800;
+}
+
+.stopwatch-button.pause:hover {
+  background-color: rgba(255, 168, 38, 0.81);
+}
+
+.stopwatch-button.lap {
+  background-color: #35d4dd;
+}
+
+.stopwatch-button.lap:hover {
+  background-color: #35d5ddc5;
+}
+
+.stopwatch-button.lap:active {
+  background-color: #28a4aa;
+}
+
+.stopwatch-button.lap:disabled {
+  background-color: rgb(158, 153, 153);
+}
+
+.stopwatch-button.reset {
+  background-color: rgb(230, 29, 29);
+}
+
+.stopwatch-button.reset:hover {
+  background-color: rgba(230, 29, 29, 0.752);
+}
+
+.stopwatch-button.reset:disabled {
+  background-color: rgb(158, 153, 153);
+}
+
+.stopwatch-container,
+.stopwatch-laps {
+  position: relative;
+  display: flex;
+  padding: 10px;
+}
+
+.stopwatch-container {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 50vw;
+  width: 60%;
+}
+
+.stopwatch-laps {
+  flex-direction: column;
+  border-top: 1px solid #ccc;
+  margin-bottom: 20px;
+  font-size: 22px;
+  margin-bottom: 10px;
+  width: 60%;
+  height: 50vw;
+  overflow: auto;
+}
+
+@media screen and (max-width: 600px) {
+  
+}
+
+@media screen and (max-width: 800px) {
+  
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
